@@ -9,7 +9,7 @@
       variant="outlined"
       >
         <template v-slot:activator="{ props }">
-          <VBtn v-bind="props" color="success" @click="getIP" icon="mdi-reload"></VBtn>
+          <VBtn v-bind="props" color="success" @click="getIP(client)" icon="mdi-reload"></VBtn>
         </template>
         <p>IP updated</p>
       </v-snackbar>
@@ -21,8 +21,9 @@
 import mqtt from 'mqtt'
 import {ref, onMounted} from 'vue'
 
+const client = mqtt.connect("ws://broker.emqx.io:8083/mqtt");
+
 var theIP = ref("None")
-var oldIP = ref("None")
 function getIP(client) {
   client.on("message", (topic, message) => {
     theIP.value = message
@@ -32,7 +33,6 @@ function getIP(client) {
   client.publish("getIP","requesting ip")
 }
 onMounted(() => {
-  const client = mqtt.connect("ws://broker.emqx.io:8083/mqtt");
   getIP(client);
 })
 </script>
